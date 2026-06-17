@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ДЕЛО №1120 • МЕНТАЛЬНАЯ АНОМАЛИЯ</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
+
+        :root {
+            --bg: #1a1f2e;
+            --paper: #0f141f;
+            --text: #e8d5b8;
+            --accent: #c41e3a;
+            --gold: #d4af37;
+            --green: #4ade80;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'VT323', monospace;
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: var(--paper);
+            border: 6px solid var(--gold);
+            box-shadow: 0 0 60px rgba(212, 175, 55, 0.25);
+            position: relative;
+            min-height: 90vh;
+        }
+
+        /* === ШТАМП === */
+        .stamp {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            transform: rotate(12deg);
+            color: var(--accent);
+            font-size: 1.4em;
+            border: 4px solid var(--accent);
+            padding: 6px 16px;
+            opacity: 0.85;
+            z-index: 100;
+            background: rgba(15, 20, 31, 0.9);
+            pointer-events: none;
+            letter-spacing: 2px;
+        }
+
+        @media (max-width: 600px) {
+            .stamp {
+                font-size: 1em;
+                padding: 4px 10px;
+                top: 10px;
+                right: 10px;
+            }
+        }
+
+        /* === HEADER === */
+        header {
+            background: linear-gradient(180deg, #2c2f3a 0%, #1a1f2e 100%);
+            padding: 30px 40px;
+            text-align: center;
+            border-bottom: 4px solid var(--accent);
+            position: relative;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2em, 6vw, 3.5em);
+            letter-spacing: 4px;
+            color: var(--gold);
+            text-shadow: 0 0 15px var(--accent);
+            margin: 0;
+            word-break: break-word;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.5em, 4vw, 2.2em);
+            color: var(--gold);
+            margin: 0 0 10px 0;
+        }
+
+        header p {
+            font-size: clamp(1.1em, 2.5vw, 1.6em);
+            margin: 10px 0 0 0;
+            color: var(--text);
+        }
+
+        /* === STAGES === */
+        .stage {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .stage.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stage-content {
+            padding: 40px 50px;
+            position: relative;
+            min-height: 400px;
+        }
+
+        @media (max-width: 600px) {
+            .stage-content {
+                padding: 20px 25px;
+            }
+            header {
+                padding: 20px 25px;
+            }
+            .container {
+                margin: 10px;
+                border-width: 4px;
+            }
+        }
+
+        /* === ПЕРСОНАЖ === */
+        .character {
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            z-index: 50;
+            pointer-events: none;
+            filter: drop-shadow(0 8px 12px rgba(0,0,0,0.5));
+            animation: characterAppear 0.8s ease-out, characterWave 3s ease-in-out infinite 1s;
+        }
+
+        .character img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: transparent !important;
+            border-radius: 0;
+        }
+
+        /* Позиции персонажа на разных этапах */
+        .character-pos-1 { bottom: 30px; right: 30px; }
+        .character-pos-2 { bottom: 30px; left: 30px; }
+        .character-pos-3 { top: 100px; right: 20px; }
+        .character-pos-4 { bottom: 30px; right: 30px; }
+
+        @keyframes characterAppear {
+            from { 
+                opacity: 0; 
+                transform: scale(0.5) rotate(-10deg); 
+            }
+            to { 
+                opacity: 1; 
+                transform: scale(1) rotate(0deg); 
+            }
+        }
+
+        @keyframes characterWave {
+            0%, 100% { transform: rotate(0deg) translateY(0); }
+            25% { transform: rotate(3deg) translateY(-5px); }
+            75% { transform: rotate(-3deg) translateY(-3px); }
+        }
+
+        /* На мобильных персонаж скрыт, чтобы не мешать */
+        @media (max-width: 768px) {
+            .character {
+                display: none;
+            }
+        }
+
+        /* === TYPOGRAPHY === */
+        .stage-content p {
+            font-size: clamp(1.2em, 2.5vw, 1.5em);
+            margin: 15px 0;
+        }
+
+        .classified {
+            text-align: center;
+            font-size: 1.2em;
+            color: var(--accent);
+            letter-spacing: 3px;
+            margin: 20px 0;
+        }
+
+        /* === INPUTS === */
+        .input-field {
+            width: 100%;
+            padding: 16px;
+            font-size: clamp(1.2em, 2.5vw, 1.4em);
+            font-family: 'VT323', monospace;
+            background: #1e2533;
+            border: 3px solid var(--gold);
+            color: var(--text);
+            margin: 15px 0;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .input-field:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(196, 30, 58, 0.4);
+        }
+
+        .input-field::placeholder {
+            color: #666;
+        }
+
+        /* === BUTTONS === */
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 14px 36px;
+            font-size: clamp(1.2em, 2.5vw, 1.5em);
+            font-family: 'VT323', monospace;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-check {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-check:hover {
+            background: #e83e5c;
+        }
+
+        .btn-next {
+            background: var(--gold);
+            color: #1a1f2e;
+        }
+
+        .btn-next:hover {
+            background: #f0c94a;
+        }
+
+        .btn-start {
+            background: var(--gold);
+            color: #1a1f2e;
+            font-size: clamp(1.5em, 3vw, 2em);
+            padding: 18px 50px;
+        }
+
+        /* === AUDIO === */
+        audio {
+            width: 100%;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        /* === QUESTIONS === */
+        .question {
+            margin: 25px 0;
+            padding: 15px;
+            background: rgba(30, 37, 51, 0.5);
+            border-left: 4px solid var(--accent);
+        }
+
+        .question p {
+            margin: 0 0 10px 0;
+            font-size: clamp(1.1em, 2.2vw, 1.3em);
+        }
+
+        .question strong {
+            color: var(--gold);
+        }
+
+        /* === SUCCESS === */
+        .success-box {
+            display: none;
+            text-align: center;
+            padding: 40px 30px;
+            background: rgba(0, 80, 0, 0.2);
+            border: 4px solid var(--green);
+            margin: 30px 0;
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        .success-box.active {
+            display: block;
+        }
+
+        .big-digit {
+            font-size: clamp(5em, 12vw, 8em);
+            color: var(--gold);
+            text-shadow: 0 0 30px var(--accent);
+            margin: 10px 0;
+            line-height: 1;
+        }
+
+        .success-text {
+            font-size: clamp(1.5em, 3vw, 2em);
+            color: var(--gold);
+            margin: 20px 0;
+        }
+
+        /* === ERROR === */
+        .error-msg {
+            color: #ff6666;
+            font-size: 1.3em;
+            margin: 15px 0;
+            display: none;
+        }
+
+        .error-msg.active {
+            display: block;
+        }
+
+        /* === FINAL === */
+        .final-code-input {
+            text-align: center;
+            font-size: clamp(1.5em, 4vw, 2.5em) !important;
+            letter-spacing: 8px;
+            max-width: 300px;
+            margin: 20px auto;
+            display: block;
+        }
+
+        .video-container {
+            margin: 40px auto;
+            max-width: 640px;
+            background: #000;
+            border: 4px solid var(--gold);
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+        }
+
+        .video-container iframe,
+        .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .video-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gold);
+            font-size: 1.5em;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* === INTRO CENTER === */
+        .intro-center {
+            text-align: center;
+            padding: 40px 30px;
+        }
+
+        .intro-center p {
+            max-width: 700px;
+            margin: 20px auto;
+        }
+
+        /* === PROGRESS === */
+        .progress-bar {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .progress-dot {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            color: var(--gold);
+            opacity: 0.4;
+            transition: all 0.3s;
+        }
+
+        .progress-dot.active {
+            opacity: 1;
+            background: var(--gold);
+            color: #1a1f2e;
+            box-shadow: 0 0 15px var(--gold);
+        }
+
+        .progress-dot.completed {
+            opacity: 1;
+            background: var(--green);
+            border-color: var(--green);
+            color: #1a1f2e;
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <div class="container">
+        <div class="stamp">СОВЕРШЕННО СЕКРЕТНО</div>
+
+        <!-- ==================== INTRO ==================== -->
+        <div id="stage-intro" class="stage active">
+            <header>
+                <h1>ДЕЛО №1120</h1>
+                <p>МЕНТАЛЬНАЯ АНОМАЛИЯ • СЕКРЕТНЫЙ АРХИВ</p>
+            </header>
+            <div class="stage-content intro-center">
+                <p>Уважаемый Детектив.</p>
+                <p>В архиве Департамента Особо Странных Совпадений произошёл критический сбой.</p>
+                <p>Часть материалов была повреждена, некоторые записи утрачены, а сведения о происхождении одной крайне необычной связи оказались заблокированы.</p>
+                <p>Ваша задача — восстановить хронологию событий, собрать улики и подтвердить существование аномалии, которую специалисты не могут объяснить уже несколько лет.</p>
+                <p><strong>Предупреждение:</strong> возможны приступы смеха, ностальгии, кринжа и необъяснимого чувства, что всё это уже когда‑то происходило.</p>
+
+                <div class="progress-bar" id="intro-progress">
+                    <div class="progress-dot">1</div>
+                    <div class="progress-dot">2</div>
+                    <div class="progress-dot">3</div>
+                    <div class="progress-dot">4</div>
+                </div>
+
+                <div class="btn-group">
+                    <button onclick="startGame()" class="btn-start">НАЧАТЬ РАССЛЕДОВАНИЕ</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== STAGE 1 ==================== -->
+        <div id="stage-1" class="stage">
+            <header>
+                <h2>CASE FILES</h2>
+                <p>FILE №1120 — THE SALES WORLD STALKER</p>
+            </header>
+            <div class="stage-content">
+                <p>В архиве обнаружена аудиозапись, содержащая материалы по одному из самых громких дел последних лет.</p>
+<p>Прослушайте запись полностью.</p>
+<p>Не доверяйте первым впечатлениям.</p>
+<p>Иногда самая важная улика скрывается в фразе, на которую никто не обращает внимания.</p>
+<p>Внутри записи находится ключ, необходимый для продолжения расследования.</p>
+
+                <audio id="podcast-audio" controls>
+                    <source src="https://files.catbox.moe/pfcnfdrf.mp3" type="audio/mpeg">
+                    Ваш браузер не поддерживает аудио. Попробуйте другой браузер.
+                </audio>
+
+                <input type="text" id="input-1" class="input-field" placeholder="введите кодовое слово" autocomplete="off">
+
+                <div class="error-msg" id="error-1">Доступ отклонён. Архивная запись проанализирована не полностью.</div>
+
+                <div class="btn-group">
+                    <button onclick="checkStage1()" class="btn-check">ПРОВЕРИТЬ</button>
+                </div>
+
+                <div class="success-box" id="success-1">
+                    <h2 style="color: var(--green);">АРХИВНАЯ ЗАПИСЬ УСПЕШНО РАСШИФРОВАНА</h2>
+                    <div class="big-digit">1</div>
+                    <p class="success-text">Получен первый фрагмент шифра.<br><strong>Разрешено вскрытие ВЕЩДОКА №1.</strong></p>
+                    <button onclick="goToStage(2)" class="btn-next">ПРОДОЛЖИТЬ РАССЛЕДОВАНИЕ</button>
+                </div>
+
+                <!-- Персонаж -->
+                <div class="character character-pos-1">
+                    <img src="detective.png" alt="Детектив">
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== STAGE 2 ==================== -->
+        <div id="stage-2" class="stage">
+            <header>
+                <h2>ЭТАП 2 • КРОССВОРД</h2>
+                <p>ВЕЩДОК №2</p>
+            </header>
+            <div class="stage-content">
+                <p>Следствию удалось получить доступ к части личного архива объекта.</p>
+<p>Для продолжения расследования необходимо подтвердить, что доступ к материалам получила именно та, кому они предназначены.</p>
+<p>Заполните кроссворд, используя знания о привычках, странностях, увлечениях и жизненных решениях объекта.</p>
+<p>Посторонний человек не сможет пройти эту проверку.</p>
+                <p style="color: #888; font-size: 1.1em;">(Кроссворд находится у вас в руках — вживую)</p>
+
+                <input type="text" id="input-2" class="input-field" placeholder="введите слово" autocomplete="off">
+
+                <div class="error-msg" id="error-2">Результаты идентификации не совпадают с архивными данными.</div>
+
+                <div class="btn-group">
+                    <button onclick="checkStage2()" class="btn-check">ПРОВЕРИТЬ</button>
+                </div>
+
+                <div class="success-box" id="success-2">
+                    <h2 style="color: var(--green);">ЛИЧНОСТЬ ЧАСТИЧНО ПОДТВЕРЖДЕНА</h2>
+                    <div class="big-digit">6</div>
+                    <p class="success-text">Уровень совпадения с профилем объекта признан достаточным.<br>Получен второй фрагмент шифра.<br><strong>Разрешено вскрытие ВЕЩДОКА №2.</strong></p>
+                    <button onclick="goToStage(3)" class="btn-next">ПРОДОЛЖИТЬ РАССЛЕДОВАНИЕ</button>
+                </div>
+
+                <!-- Персонаж -->
+                <div class="character character-pos-2">
+                    <img src="detective.png" alt="Детектив">
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== STAGE 3 ==================== -->
+        <div id="stage-3" class="stage">
+            <header>
+                <h2>ЭТАП 3 • МЕМ-ЭКСПЕРТИЗА</h2>
+                <p>ВЕЩДОК №3</p>
+            </header>
+            <div class="stage-content">
+                <p>Перед вами архив визуальных доказательств.</p>
+<p>Часть материалов была повреждена, отдельные элементы утратили первоначальный порядок.</p>
+<p>Изучите материалы дела.</p>
+<p>Восстановите правильную последовательность событий и соберите кодовый шифр на основании установленной хронологии.</p>
+                <p style="color: #888; font-size: 1.1em;">(Мемы находятся у вас в руках — вживую)</p>
+
+                <input type="text" id="input-3" class="input-field" placeholder="например: 123456789" maxlength="9" autocomplete="off">
+
+                <div class="error-msg" id="error-3">Результаты экспертизы противоречат архивным данным.</div>
+
+                <div class="btn-group">
+                    <button onclick="checkStage3()" class="btn-check">ПРОВЕРИТЬ</button>
+                </div>
+
+                <div class="success-box" id="success-3">
+                    <h2 style="color: var(--green);">МЕМНАЯ ЭКСПЕРТИЗА ЗАВЕРШЕНА</h2>
+                    <div class="big-digit">3</div>
+                    <p class="success-text">Хронология успешно восстановлена.<br>Получен третий фрагмент шифра.<br><strong>Разрешено вскрытие ВЕЩДОКА №3.</strong></p>
+                    <button onclick="goToStage(4)" class="btn-next">ПРОДОЛЖИТЬ РАССЛЕДОВАНИЕ</button>
+                </div>
+
+                <!-- Персонаж -->
+                <div class="character character-pos-3">
+                    <img src="detective.png" alt="Детектив">
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== STAGE 4 ==================== -->
+        <div id="stage-4" class="stage">
+            <header>
+                <h2>ЭТАП 4 • ЦИФРОВОЙ СЛЕД</h2>
+                <p>ВЕЩДОК №4</p>
+            </header>
+            <div class="stage-content">
+                <p>Подозреваемая слишком долго существовала в интернете без должного контроля.</p>
+<p>В распоряжении следствия находятся публикации, фотографии, переписки, документы и цифровые отпечатки.</p>
+<p>Для завершения расследования необходимо восстановить утраченные сведения и подтвердить личность объекта.</p>
+<p><strong>Использование памяти приветствуется. Паника не приветствуется.</strong></p>
+
+                <div class="question">
+                    <p><strong>1.</strong> Укажите дату первого зафиксированного группового увольнения по делу «Подушки»</p>
+                    <input type="text" id="q-1" class="input-field" placeholder="ДД.ММ.ГГГГ" autocomplete="off">
+                </div>
+
+                <div class="question">
+                    <p><strong>2.</strong> Укажите дату повторного совместного увольнения фигурантов дела</p>
+                    <input type="text" id="q-2" class="input-field" placeholder="ДД.ММ.ГГГГ" autocomplete="off">
+                </div>
+
+                <div class="question">
+                    <p><strong>3.</strong> Следствие установило, что подозреваемые потратили аномально большое количество времени на выбор цвета кухонных фасадов. Укажите дату данного события</p>
+                    <input type="text" id="q-3" class="input-field" placeholder="ДД.ММ.ГГГГ" autocomplete="off">
+                </div>
+
+                <div class="question">
+                    <p><strong>4.</strong> Укажите дату проведения операции по установке первого кухонного шкафа</p>
+                    <input type="text" id="q-4" class="input-field" placeholder="ДД.ММ.ГГГГ" autocomplete="off">
+                </div>
+
+                <div class="question">
+                    <p><strong>5.</strong> Укажите дату окончательного размещения последней утвари на законном месте хранения</p>
+                    <input type="text" id="q-5" class="input-field" placeholder="ДД.ММ.ГГГГ" autocomplete="off">
+                </div>
+
+                <div class="question">
+                    <p><strong>6.</strong> Укажите дату проведения операции «Интеграция плиты»</p>
+                    <input type="text" id="q-6" class="input-field" placeholder="ДД.ММ.ГГГГ" autocomplete="off">
+                </div>
+
+                <div class="error-msg" id="error-4">Архивные данные восстановлены не полностью. Проверьте найденные сведения и повторите попытку.</div>
+
+                <div class="btn-group">
+                    <button onclick="checkStage4()" class="btn-check">ПРОВЕРИТЬ ВСЕ ОТВЕТЫ</button>
+                </div>
+
+                <div class="success-box" id="success-4">
+                    <h2 style="color: var(--green);">ЛИЧНОСТЬ УСПЕШНО ПОДТВЕРЖДЕНА</h2>
+                    <div class="big-digit">1</div>
+                    <p class="success-text">Вероятность ошибки: менее 0,01%.<br>Получен последний фрагмент шифра.<br><strong>Разрешено вскрытие ВЕЩДОКА №4.</strong></p>
+                    <button onclick="goToFinal()" class="btn-next">ПЕРЕЙТИ К ФИНАЛЬНОМУ ПРОТОКОЛУ</button>
+                </div>
+
+                <!-- Персонаж -->
+                <div class="character character-pos-4">
+                    <img src="detective.png" alt="Детектив">
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== FINAL ==================== -->
+        <div id="stage-final" class="stage">
+            <header>
+                <h1>ФИНАЛЬНЫЙ ПРОТОКОЛ</h1>
+                <p>ДОСТУП К СЕКРЕТНОМУ АРХИВУ</p>
+            </header>
+            <div class="stage-content" style="text-align: center;">
+                <p style="font-size: 1.6em;">Расследование завершено, Детектив!</p>
+                <p style="font-size: 1.4em; max-width: 700px; margin: 20px auto;">
+                    Вы успешно восстановили архив.<br>
+                    Введите полный код для доступа к финальному протоколу.
+                </p>
+
+                <div class="progress-bar">
+                    <div class="progress-dot completed">1</div>
+                    <div class="progress-dot completed">6</div>
+                    <div class="progress-dot completed">3</div>
+                    <div class="progress-dot completed">1</div>
+                </div>
+
+                <input type="text" id="final-code" class="input-field final-code-input" placeholder="••••" maxlength="4" autocomplete="off">
+
+                <div class="error-msg" id="error-final">Результаты экспертизы противоречат архивным данным.</div>
+
+                <div class="btn-group">
+                    <button onclick="checkFinalCode()" class="btn-check">ПОДТВЕРДИТЬ КОД</button>
+                </div>
+
+                <div class="success-box" id="final-success">
+                    <h2 style="color: var(--green); font-size: 2em;">ЛИЧНОСТЬ ВЕРИФИЦИРОВАНА</h2>
+                    <p style="font-size: 1.8em; color: var(--gold);">МЕНТАЛЬНЫЙ МЭТЧ ПОДТВЕРЖДЁН</p>
+                    <p style="font-size: 1.3em; color: var(--text);">ОГРАНИЧЕНИЯ СНЯТЫ • ДОСТУП К АРХИВУ РАЗРЕШЁН</p>
+
+                    <!-- ВИДЕО: замени ссылку ниже на свою -->
+                    <div class="video-container" id="video-box">
+                        <div class="video-placeholder">
+                            🎬 Видео-поздравление загружается...<br>
+                            <small style="color: #888;">(вставь ссылку на видео в код)</small>
+                        </div>
+                    </div>
+
+                    <p style="font-size: 1.5em; color: var(--accent); margin-top: 30px;">
+                        С днём рождения! 🎉
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== КОНФИГУРАЦИЯ ====================
+        const ANSWERS = {
+            stage1: 'перезвоню',
+            stage2: 'близнецы',
+            stage3: '614972358',
+            stage4: {
+                q1: '31.07.2023',
+                q2: '06.04.2026',
+                q3: ['23.05.2023','24.05.2023','25.05.2023','26.05.2023','27.05.2023'],
+                q4: ['27.07.2023','28.07.2023','29.07.2023','30.07.2023','31.07.2023'],
+                q5: ['12.10.2023','13.10.2023','14.10.2023','15.10.2023','16.10.2023'],
+                q6: ['27.11.2025','28.11.2025','29.11.2025','30.11.2025','01.12.2025']
+            }
+        };
+
+        const FINAL_CODE = '1631';
+
+        // Ссылка на видео — ЗАМЕНИ на свою!
+        const VIDEO_URL = ''; // <-- ВСТАВЬ СЮДА ССЫЛКУ
+
+        // ==================== НАВИГАЦИЯ ====================
+        function hideAllStages() {
+            document.querySelectorAll('.stage').forEach(s => s.classList.remove('active'));
+        }
+
+        function showStage(id) {
+            hideAllStages();
+            document.getElementById('stage-' + id).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function startGame() {
+            showStage(1);
+        }
+
+        function goToStage(num) {
+            showStage(num);
+        }
+
+        function goToFinal() {
+            showStage('final');
+        }
+
+        // ==================== ВАЛИДАЦИЯ ====================
+        function showError(id) {
+            const el = document.getElementById('error-' + id);
+            if (el) {
+                el.classList.add('active');
+                el.style.animation = 'none';
+                el.offsetHeight;
+                el.style.animation = 'fadeIn 0.3s ease';
+            }
+        }
+
+        function hideError(id) {
+            const el = document.getElementById('error-' + id);
+            if (el) el.classList.remove('active');
+        }
+
+        function showSuccess(id) {
+            const el = document.getElementById('success-' + id);
+            if (el) el.classList.add('active');
+        }
+
+        // ==================== ЭТАП 1 ====================
+        function checkStage1() {
+            const val = document.getElementById('input-1').value.trim().toLowerCase();
+            hideError(1);
+
+            if (val === ANSWERS.stage1) {
+                showSuccess(1);
+                document.querySelector('#stage-1 .btn-group').style.display = 'none';
+            } else {
+                showError(1);
+            }
+        }
+
+        // ==================== ЭТАП 2 ====================
+        function checkStage2() {
+            const val = document.getElementById('input-2').value.trim().toLowerCase();
+            hideError(2);
+
+            if (val === ANSWERS.stage2) {
+                showSuccess(2);
+            } else {
+                showError(2);
+            }
+        }
+
+        // ==================== ЭТАП 3 ====================
+        function checkStage3() {
+            const val = document.getElementById('input-3').value.trim();
+            hideError(3);
+
+            if (val === ANSWERS.stage3) {
+                showSuccess(3);
+            } else {
+                showError(3);
+            }
+        }
+
+        // ==================== ЭТАП 4 ====================
+        function checkStage4() {
+            const q1 = document.getElementById('q-1').value.trim();
+            const q2 = document.getElementById('q-2').value.trim();
+            const q3 = document.getElementById('q-3').value.trim();
+            const q4 = document.getElementById('q-4').value.trim();
+            const q5 = document.getElementById('q-5').value.trim();
+            const q6 = document.getElementById('q-6').value.trim();
+
+            hideError(4);
+
+            const correct = (
+                q1 === ANSWERS.stage4.q1 &&
+                q2 === ANSWERS.stage4.q2 &&
+                ANSWERS.stage4.q3.includes(q3) &&
+                ANSWERS.stage4.q4.includes(q4) &&
+                ANSWERS.stage4.q5.includes(q5) &&
+                ANSWERS.stage4.q6.includes(q6)
+            );
+
+            if (correct) {
+                showSuccess(4);
+            } else {
+                showError(4);
+            }
+        }
+
+        // ==================== ФИНАЛ ====================
+        function checkFinalCode() {
+            const code = document.getElementById('final-code').value.trim();
+            hideError('final');
+
+            if (code === FINAL_CODE) {
+                document.getElementById('final-success').classList.add('active');
+                document.getElementById('error-final').style.display = 'none';
+
+                if (VIDEO_URL) {
+                    const videoBox = document.getElementById('video-box');
+                    let embedUrl = VIDEO_URL;
+                    if (VIDEO_URL.includes('drive.google.com') && VIDEO_URL.includes('/view')) {
+                        embedUrl = VIDEO_URL.replace('/view', '/preview');
+                    }
+                    videoBox.innerHTML = `<iframe src="${embedUrl}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+                }
+            } else {
+                showError('final');
+            }
+        }
+
+        // ==================== ENTER ДЛЯ ОТПРАВКИ ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('input-1')?.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') checkStage1();
+            });
+            document.getElementById('input-2')?.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') checkStage2();
+            });
+            document.getElementById('input-3')?.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') checkStage3();
+            });
+            for (let i = 1; i <= 6; i++) {
+                document.getElementById('q-' + i)?.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') checkStage4();
+                });
+            }
+            document.getElementById('final-code')?.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') checkFinalCode();
+            });
+
+            console.log('🔍 Дело №1120 загружено. Готов к расследованию.');
+        });
+    </script>
+</body>
+</html>
